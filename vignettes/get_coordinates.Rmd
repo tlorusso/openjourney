@@ -1,0 +1,51 @@
+---
+title: "get_coordinates"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{get_coordinates}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(openjourney)
+```
+
+
+```{r}
+
+library(XML)
+library(xml2)
+library(httr)
+
+long_or <- 8.39
+lat_or <- 47.34
+
+long_dest <- 7.45
+lat_dest <- 46.9
+
+token1 <- paste("Bearer", "57c5dbbbf1fe4d000100001863396e06bcc5472eab6cacd76e44d91e", sep = " ")
+
+```
+
+```{r}
+
+
+coords <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
+"Bahnhof Stettbach, Switzerland"),
+method ='osm')
+
+ojp <- get_ojp_time(
+ origin=c(coords[1,]$long,coords[1,]$lat),
+ destination=c(coords[2,]$long,coords[2,]$lat)
+)
+
+```
+
