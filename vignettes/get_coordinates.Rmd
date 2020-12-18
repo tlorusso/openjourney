@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(openjourney)
+library(tidyverse)
 ```
 
 
@@ -36,8 +37,6 @@ token1 <- paste("Bearer", "57c5dbbbf1fe4d000100001863396e06bcc5472eab6cacd76e44d
 ```
 
 ```{r}
-
-
 coords <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
 "Bahnhof Stettbach, Switzerland"),
 method ='osm')
@@ -46,6 +45,26 @@ ojp <- get_ojp_time(
  origin=c(coords[1,]$long,coords[1,]$lat),
  destination=c(coords[2,]$long,coords[2,]$lat)
 )
+
+```
+
+```{r}
+library(tidygeocoder)
+
+coords <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
+                          "Zürich Stadelhofen, Switzerland",
+                          "Uster Bahnhof, Switzerland",
+                          "Bern Hauptbahnhof, Switzerland",
+"Bahnhof Stettbach, Switzerland"),
+method ='osm')
+
+
+triptimes <- map_dfr(1:4, ~get_ojp_time(
+                               origin=c(coords[.x,]$long,coords[.x,]$lat),
+                               destination=c(coords[5,]$long,coords[5,]$lat))
+                              )
+
+
 
 ```
 
