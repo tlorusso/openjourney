@@ -101,8 +101,10 @@ trip_duration_m <- as.numeric(gsub(".*?([0-9]+)M.*", "\\1", trip_duration))
 
 # get duration of trip
 tibble::tibble(
-  origin=list(c(lat_or,long_or)),
-  destination=list(c(lat_dest,long_dest)),
+  origin=st_sfc(st_point(c(long_or,lat_or))),
+  destination=st_sfc(st_point(c(long_dest,lat_dest))),
   duration_orig=trip_duration,
-  duration_min=trip_duration_h*60+trip_duration_m)
+  duration_min=ifelse(is.na(trip_duration_h),trip_duration_m,trip_duration_h*60+trip_duration_m)) %>%
+  st_as_sf() %>%
+  st_set_crs(4326)
 }

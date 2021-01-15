@@ -72,6 +72,8 @@ triptimes99 <- map_dfr(c(1,54,850), ~get_ojp_time(
                                time=time)
                               )
 
+mapview::mapview(triptimes99)
+
 triptimes99b <- map_dfr(1:987, ~get_ojp_time(
                                origin=c(coords[.x,]$lon,coords[.x,]$lat),
                                destination=c(coords2[5,]$long,coords2[5,]$lat),
