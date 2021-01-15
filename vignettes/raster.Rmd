@@ -1,0 +1,115 @@
+---
+title: "raster"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{raster}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(openjourney)
+library(tidyverse)
+library(sf)
+```
+
+```{r}
+
+# Generate a raster of the canton of zurich to get p
+
+library(raster)
+
+## testdata
+
+# shapefile
+shp <- getData(country='CH', level=1) %>%
+        sf::st_as_sf() %>%
+        filter(NAME_1=="Zürich")
+
+r <- raster(ncol=180, nrow=180)
+r <- raster(ncol=40, nrow=40)
+extent(r) <- extent(shp)
+rp <- rasterize(shp, r)
+
+plot(rp)
+
+sf_coords <- rasterToPoints(rp, spatial=TRUE) %>% sf::st_as_sf()
+
+coords <- sf::st_coordinates(sf_coords) %>%
+          as_tibble() %>%
+          rename(lat=Y,lon=X)
+
+coords2 <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
+                          "Zürich Stadelhofen, Switzerland",
+                          "Uster Bahnhof, Switzerland",
+                          "Bern Hauptbahnhof, Switzerland",
+"Bahnhof Stettbach, Switzerland"),
+method ='osm')
+
+```
+```{r}
+
+# triptimes99b <- map_dfr(1:987, ~get_ojp_time(
+#                                origin=c(coords[.x,]$lon,coords[.x,]$lat),
+#                                destination=c(coords2[5,]$long,coords2[5,]$lat),
+#                                time=time,
+#                                sys.sleep=5)
+#                               )
+
+# saveRDS(triptimes99b,"trips.RDS")
+
+trips <- readRDS("~/repos/openjourney/vignettes/trips.RDS")
+                
+
+```
+
+
+```{r}
+
+# triptimes99b$durationh <- as.numeric(gsub(".*?([0-9]+)H.*", "\\1", triptimes99b$duration))
+# 
+# triptimes99b$durationm <- as.numeric(gsub(".*?([0-9]+)M.*", "\\1", triptimes99b$duration))
+# 
+# triptimes99b <- triptimes99b %>% mutate(duration_min=durationh*60+durationm)
+# triptimes99b <- triptimes99b %>% mutate(duration_min=durationh*60+durationm)
+------------
+# triptimes99b$durationh <- as.numeric(gsub(".*?([0-9]+)H.*", "\\1", triptimes99b$duration))
+# 
+# triptimes99b$durationm <- as.numeric(gsub(".*?([0-9]+)M.*", "\\1", triptimes99b$duration))
+  
+  
+# saveRDS(triptimes99b,"trips.RDS")
+
+# in Funktion einbauen
+triptimes99b <- trips %>% 
+  mutate(origin=st_sfc(purrr::map(trips$origin,~st_point(rev(.)))),
+destination=st_sfc(purrr::map(trips$destination,~st_point(rev(.))))) %>% 
+    st_as_sf() %>% 
+  st_set_crs(4326)
+
+# in Funktion einbauen
+triptimes99b<- triptimes99b %>%
+  mutate(duration_min=ifelse(is.na(durationh),durationm,durationh*60+durationm))
+
+###
+
+ggplot(triptimes99b,aes(color=duration_min))+
+  geom_sf()+
+  scale_fill_viridis_c()+
+  theme_void()
+
+mapview::mapview(triptimes99b,zcol = "duration_min")
+
+
+```
+# Wieso NAs für gewisse Koordinaten?
+# OK R Package?
+# Punkte zu beachten?
+# Gehzeit falls keine Verbindung?

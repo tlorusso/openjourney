@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(openjourney)
 library(tidyverse)
+library(tidygeocoder)
 ```
 
 
@@ -41,30 +42,82 @@ coords <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
 "Bahnhof Stettbach, Switzerland"),
 method ='osm')
 
+time <- paste0(Sys.Date(),"T08:34:40")
+
 ojp <- get_ojp_time(
  origin=c(coords[1,]$long,coords[1,]$lat),
- destination=c(coords[2,]$long,coords[2,]$lat)
+ destination=c(coords[2,]$long,coords[2,]$lat,
+               time=time)
 )
 
+response
 ```
 
 ```{r}
 library(tidygeocoder)
 
-coords <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
+coords2 <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
                           "Zürich Stadelhofen, Switzerland",
                           "Uster Bahnhof, Switzerland",
                           "Bern Hauptbahnhof, Switzerland",
 "Bahnhof Stettbach, Switzerland"),
 method ='osm')
 
+time <- paste0(Sys.Date(),"T08:34:40")
 
-triptimes <- map_dfr(1:4, ~get_ojp_time(
-                               origin=c(coords[.x,]$long,coords[.x,]$lat),
-                               destination=c(coords[5,]$long,coords[5,]$lat))
+# test mit einer Destination
+triptimes99 <- map_dfr(c(1,54,850), ~get_ojp_time(
+                               origin=c(coords[.x,]$lon,coords[.x,]$lat),
+                               destination=c(coords2[5,]$long,coords2[5,]$lat),
+                               time=time)
+                              )
+
+triptimes99b <- map_dfr(1:987, ~get_ojp_time(
+                               origin=c(coords[.x,]$lon,coords[.x,]$lat),
+                               destination=c(coords2[5,]$long,coords2[5,]$lat),
+                               time=time,
+                               sys.sleep=5)
+                              )
+
+saveRDS(triptimes99b,"trips.RDS")
+
+
+# safe version
+safe_ojp <- possibly(get_ojp_time, otherwise=NA)
+
+triptimes2 <- map_dfr(seq(1,851,50), ~safe_ojp(origin=c(coords$lon[.x],coords$lat[.x]),
+                              destination=c(coords2[5,]$long,coords2[5,]$lat,
+                                            time=time,
+                                            sys.sleep=5))
+  )
+
+
+# Funktioniert
+triptimes2 <- map_dfr(1:987, ~safe_ojp(origin=c(coords$lon[.x],coords$lat[.x]),
+                              destination=c(coords2[5,]$long,coords2[5,]$lat,
+                                            time=time,
+                                            sys.sleep=5))
+  )
+
+saveRDS(triptimes99b,"trips.RDS")
+
+
+#problematische koordinate -> 57
+triptimes2[[57]]
+
+map(triptimes2,3)
+
+# 1:nrow(coords) : Fehler:
+
+triptimes3 <- map_dfr(1:70, ~safe_ojp(
+                               origin=c(coords$lon[.x],coords$lat[.x]),
+                              destination=c(coords2[5,]$long,coords2[5,]$lat))
                               )
 
 
+
+
+# triptimes2[1]
 
 ```
 
