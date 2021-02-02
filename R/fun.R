@@ -23,20 +23,24 @@ get_ojp_time <- function(auth=token1,
                          destination=NA,
                          time=NA,sys.sleep=NA){
 
+# add delay between requests to respect API-Rate limits
 if(!is.na(sys.sleep)) {Sys.sleep(sys.sleep)}
 
+#coordinates of the origin
 long_or <- origin[1]
 lat_or <- origin[2]
 
+#coordinates of the destination
 long_dest <- destination[1]
 lat_dest <- destination[2]
 
+#compile request body
 body  <-glue::glue('<?xml version="1.0" encoding="utf-8"?>
 <OJP xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.siri.org.uk/siri" version="1.0" xmlns:ojp="http://www.vdv.de/ojp" xsi:schemaLocation="http://www.siri.org.uk/siri ../ojp-xsd-v1.0/OJP.xsd">
     <OJPRequest>
         <ServiceRequest>
             <RequestTimestamp>2020-12-16T20:38:51.798Z</RequestTimestamp>
-            <RequestorRef>R Pa</RequestorRef>
+            <RequestorRef>openjourney package</RequestorRef>
             <ojp:OJPTripRequest>
                 <RequestTimestamp>2020-12-16T20:38:51.798Z</RequestTimestamp>
                 <ojp:Origin>
@@ -73,16 +77,19 @@ body  <-glue::glue('<?xml version="1.0" encoding="utf-8"?>
     </OJPRequest>
 </OJP>')
 
+#submit request
 post <- httr::POST(url="https://api.opentransportdata.swiss/ojp2020",
                   add_headers(Authorization=auth),
                   httr::content_type_xml(),
                   body=body)
 
-# body
+# extract response
 response <- httr::content(post,as="text")
 
+# Error message if rate limit is exceeded
 if(grepl("Rate limit exceeded", response)) stop("Rate limit exceeded")
 
+# Parse xml
 parse <- xmlParse(response)
 
 xml_data2 <- xmlToList(parse)
