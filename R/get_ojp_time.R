@@ -1,9 +1,10 @@
-#' get_ojp_time get ...
+#' get_ojp_time get traveltime between two coordinates
 #'
 #' @param auth authentication token
 #' @param origin geocoordinates of the origin, WGS
 #' @param destination geocoordinates of the destination
 #' @param time departure time in format "YYYY-MM-16T08:34:40"
+#' @param sys.sleep delay after an API-call until the next is triggered
 #'
 #' @return tibble
 #' @export
@@ -25,6 +26,8 @@ get_ojp_time <- function(auth=token1,
 
 # add delay between requests to respect API-Rate limits
 if(!is.na(sys.sleep)) {Sys.sleep(sys.sleep)}
+
+# add checks for coordinates etc.
 
 #coordinates of the origin
 long_or <- origin[1]
