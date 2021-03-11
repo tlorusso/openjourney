@@ -1,4 +1,4 @@
-#' get_ojp_time get traveltime between two coordinates
+#' Get_ojp_time get traveltime between two coordinates
 #'
 #' @param auth authentication token
 #' @param origin geocoordinates of the origin, WGS
@@ -19,16 +19,20 @@
 #' )
 #'
 
-get_ojp_time <- function(auth=token1,
+get_ojp_time <- function(auth=NA,
                          origin=NA,
                          destination=NA,
-                         time=NA,sys.sleep=NA){
+                         time=NA,
+                         sys.sleep=NA){
 
 # add delay between requests to respect API-Rate limits
 if(!is.na(sys.sleep)) {Sys.sleep(sys.sleep)}
 
-# add checks for coordinates etc.
+if(is.na(auth)) {stop("Authentication token required. Please provide a token: get_ojp_time(auth='your_token',...)")}
 
+# message(paste0(origin[1]," and ", origin[2]))
+
+# add checks for coordinates etc.
 #coordinates of the origin
 long_or <- origin[1]
 lat_or <- origin[2]
@@ -38,7 +42,7 @@ long_dest <- destination[1]
 lat_dest <- destination[2]
 
 #compile request body
-body  <-glue::glue('<?xml version="1.0" encoding="utf-8"?>
+body  <- glue::glue('<?xml version="1.0" encoding="utf-8"?>
 <OJP xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.siri.org.uk/siri" version="1.0" xmlns:ojp="http://www.vdv.de/ojp" xsi:schemaLocation="http://www.siri.org.uk/siri ../ojp-xsd-v1.0/OJP.xsd">
     <OJPRequest>
         <ServiceRequest>

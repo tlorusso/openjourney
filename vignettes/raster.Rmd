@@ -1,5 +1,5 @@
 ---
-title: "raster"
+title: "Trip duration to Zurich Central Station"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{raster}
@@ -18,34 +18,38 @@ knitr::opts_chunk$set(
 library(openjourney)
 library(tidyverse)
 library(sf)
+library(raster)
 ```
 
+How long until Zurich Central Station? We can generate a raster of the canton of zurich to get p
+
 ```{r}
-
-# Generate a raster of the canton of zurich to get p
-
-library(raster)
-
-## testdata
-
-# shapefile
+# get shapefile of Switzerland and filter the canton of Zurich
 shp <- getData(country='CH', level=1) %>%
         sf::st_as_sf() %>%
         filter(NAME_1=="Zürich")
 
+#generate raster
 r <- raster(ncol=180, nrow=180)
 r <- raster(ncol=40, nrow=40)
+
+# 
 extent(r) <- extent(shp)
 rp <- rasterize(shp, r)
 
+#plot
 plot(rp)
 
-sf_coords <- rasterToPoints(rp, spatial=TRUE) %>% sf::st_as_sf()
+#transform to points
+sf_coords <- rasterToPoints(rp, spatial=TRUE) %>% 
+  sf::st_as_sf()
 
+#get coordinates of the points
 coords <- sf::st_coordinates(sf_coords) %>%
           as_tibble() %>%
           rename(lat=Y,lon=X)
 
+# get coordinates of our destination
 coords2 <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
                           "Zürich Stadelhofen, Switzerland",
                           "Uster Bahnhof, Switzerland",
@@ -54,14 +58,24 @@ coords2 <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
 method ='osm')
 
 ```
-```{r}
 
-# triptimes99b <- map_dfr(1:987, ~get_ojp_time(
+```{r echo=FALSE, eval=TRUE}
+
+# triptimes99b <- map_dfr(1:10, ~get_ojp_time(
 #                                origin=c(coords[.x,]$lon,coords[.x,]$lat),
 #                                destination=c(coords2[5,]$long,coords2[5,]$lat),
 #                                time=time,
 #                                sys.sleep=5)
 #                               )
+
+triptimes99b <- get_tripduration(auth=token1,
+                               origin=list(coords2$long[1:4],coords2$lat[1:4]),
+                               destination=c(coords2[5,]$long,coords2[5,]$lat),
+                               time=time,
+                               sys.sleep=5)
+                              
+
+
 
 # saveRDS(triptimes99b,"trips.RDS")
 
@@ -72,35 +86,7 @@ trips <- readRDS("~/repos/openjourney/vignettes/trips.RDS")
 
 
 ```{r}
-
-# triptimes99b$durationh <- as.numeric(gsub(".*?([0-9]+)H.*", "\\1", triptimes99b$duration))
-# 
-# triptimes99b$durationm <- as.numeric(gsub(".*?([0-9]+)M.*", "\\1", triptimes99b$duration))
-# 
-# triptimes99b <- triptimes99b %>% mutate(duration_min=durationh*60+durationm)
-# triptimes99b <- triptimes99b %>% mutate(duration_min=durationh*60+durationm)
-------------
-# triptimes99b$durationh <- as.numeric(gsub(".*?([0-9]+)H.*", "\\1", triptimes99b$duration))
-# 
-# triptimes99b$durationm <- as.numeric(gsub(".*?([0-9]+)M.*", "\\1", triptimes99b$duration))
-  
-  
-# saveRDS(triptimes99b,"trips.RDS")
-
-# in Funktion einbauen
-triptimes99b <- trips %>% 
-  mutate(origin=st_sfc(purrr::map(trips$origin,~st_point(rev(.)))),
-destination=st_sfc(purrr::map(trips$destination,~st_point(rev(.))))) %>% 
-    st_as_sf() %>% 
-  st_set_crs(4326)
-
-# in Funktion einbauen
-triptimes99b<- triptimes99b %>%
-  mutate(duration_min=ifelse(is.na(durationh),durationm,durationh*60+durationm))
-
-###
-
-ggplot(triptimes99b,aes(color=duration_min))+
+ggplot(trips,aes(color=duration_min))+
   geom_sf()+
   scale_fill_viridis_c()+
   theme_void()
