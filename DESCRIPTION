@@ -1,12 +1,12 @@
 Package: openjourney
 Type: Package
-Title: Wrapper for the OJP API 
+Title: Wrapper for the opentransportdata OJP API 
 Version: 0.1.0
 Author: Thomas Lo Russo <th.lorusso@gmail.com>
 Maintainer: Thomas Lo Russo <th.lorusso@gmail.com>
-Description: The package allows to calculate traveltimes by public transport within Switzerland between two coordinates
+Description: The package allows to calculate traveltimes by public transport within Switzerland between two coordinates.
     It wraps the ojp API of opentransportdata.swiss.
-License: What license is it under?
+License: GPL2
 Encoding: UTF-8
 LazyData: true
 Suggests: 
