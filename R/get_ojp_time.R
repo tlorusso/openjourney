@@ -34,6 +34,11 @@ if(is.na(auth)) {stop("Authentication token required. Please provide a token: ge
 
 # add checks for coordinates etc.
 #coordinates of the origin
+#
+# origin <- c(8.572164,47.40459)
+#
+# destination <- c(7.45,46.9)
+
 long_or <- origin[1]
 lat_or <- origin[2]
 
@@ -91,34 +96,82 @@ post <- httr::POST(url="https://api.opentransportdata.swiss/ojp2020",
                   body=body)
 
 # extract response
-response <- httr::content(post,as="text")
+response <- suppressMessages(httr::content(post,as="text"))
 
 # Error message if rate limit is exceeded
 if(grepl("Rate limit exceeded", response)) stop("Rate limit exceeded")
 
-# Parse xml
-parse <- xmlParse(response)
+# version with xml2
+parsed_xml <- xml2::read_xml(response)
 
-xml_data2 <- xmlToList(parse)
+# xml_name(parsed_xml)
+# xml_children(parsed_xml)
+# xml_text(parsed_xml)
 
-if(xml_data2$OJPResponse$ServiceDelivery$OJPTripDelivery$Status=="true"){
+# xml_find_all(xml_list , ".//siri:TripResult")
 
-  trip_duration <- xml_data2$OJPResponse$ServiceDelivery$OJPTripDelivery$TripResult$Trip$Duration
+trips <- xml2::xml_find_all(newlist, ".//ojp:Trip")
 
-} else {trip_duration <- NA}
+doc <- xml2::read_xml(response)
 
-#extract hours
-trip_duration_h <- as.numeric(gsub(".*?([0-9]+)H.*", "\\1", trip_duration))
+# Check if status == TRUE
+trips_found <- xml2::xml_find_all(doc, ".//siri:Status")%>%
+  xml2::xml_text()
 
-#extract minutes
-trip_duration_m <- as.numeric(gsub(".*?([0-9]+)M.*", "\\1", trip_duration))
+# verbose if(all(trips_found!=true)) {message("trip not found")}
+
+if(all(trips_found=="true")) {
+
+# Get data
+
+dataframe <- xml_find_all(doc, ".//ojp:Trip") %>%
+  map_df(function(x) {
+    list(
+      # get tripdurations
+      trip_duration=xml2::xml_find_first(x, ".//ojp:Duration") %>%  xml2::xml_text() %>%  gsub('^"|"$', "", .),
+      # get number of transfers
+      transfers=xml2::xml_find_first(x, ".//ojp:Transfers") %>%  xml2::xml_text() %>%  gsub('^"|"$', "", .)
+    )
+  })
+
+} else {
+
+dataframe <- tibble(
+  trip_duration=NA,
+  transfers=NA
+  )
+}
+
+# if(xml_data2$OJPResponse$ServiceDelivery$OJPTripDelivery$Status=="true"){
+#
+#   trip_duration <- xml_data2$OJPResponse$ServiceDelivery$OJPTripDelivery$TripResult$Trip$Duration
+#
+# } else {trip_duration <- NA}
+
+dataframe %>%
+  mutate(
+    #extract hours
+      trip_duration_h = as.numeric(gsub(".*?([0-9]+)H.*", "\\1", trip_duration)),
+    #extract minutes
+      trip_duration_m = as.numeric(gsub(".*?([0-9]+)M.*", "\\1", trip_duration))) %>%
+    #calulate trip duration in minutes
+    mutate(duration_orig=trip_duration,
+           duration_min=ifelse(is.na(trip_duration_h),trip_duration_m,trip_duration_h*60+trip_duration_m),
+           #coordinates
+           origin=st_sfc(st_point(c(long_or,lat_or))),
+           destination=st_sfc(st_point(c(long_dest,lat_dest)))) %>%
+           #as sf dataframe / set swiss coordinate system
+           st_as_sf() %>%
+           st_set_crs(4326)
+
 
 # get duration of trip
-tibble::tibble(
-  origin=st_sfc(st_point(c(long_or,lat_or))),
-  destination=st_sfc(st_point(c(long_dest,lat_dest))),
-  duration_orig=trip_duration,
-  duration_min=ifelse(is.na(trip_duration_h),trip_duration_m,trip_duration_h*60+trip_duration_m)) %>%
-  st_as_sf() %>%
-  st_set_crs(4326)
+# tibble::tibble(
+#   origin=st_sfc(st_point(c(long_or,lat_or))),
+#   destination=st_sfc(st_point(c(long_dest,lat_dest))),
+#   duration_orig=trip_duration,
+#   duration_min=ifelse(is.na(trip_duration_h),trip_duration_m,trip_duration_h*60+trip_duration_m)) %>%
+#   st_as_sf() %>%
+#   st_set_crs(4326)
+
 }
