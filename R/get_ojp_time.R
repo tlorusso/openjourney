@@ -89,7 +89,7 @@ body  <- glue::glue('<?xml version="1.0" encoding="utf-8"?>
     </OJPRequest>
 </OJP>')
 
-#submit request
+
 post <- httr::POST(url="https://api.opentransportdata.swiss/ojp2020",
                   add_headers(Authorization=auth),
                   httr::content_type_xml(),
@@ -124,6 +124,9 @@ if(all(trips_found=="true")) {
 
 # Get data
 
+  # https://xml2.r-lib.org/reference/xml_find_all.html
+
+# braucht es gsub?
 dataframe <- xml_find_all(doc, ".//ojp:Trip") %>%
   map_df(function(x) {
     list(

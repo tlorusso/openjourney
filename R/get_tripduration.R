@@ -31,11 +31,12 @@ get_tripduration<- function(auth=NA,
                             sys.sleep=NA){
 
 purrr::map_dfr(1:length(origin[[1]]),
-        ~suppressWarnings(get_ojp_time(auth=auth,
+        ~{suppressWarnings(get_ojp_time(auth=auth,
               origin=c(origin[[1]][[.]],origin[[2]][[.]]),
               destination=destination,
               time=time,
               sys.sleep=sys.sleep)
-          ))
+          )},
+        .id="trip_id")
 
 }

@@ -1,0 +1,55 @@
+---
+title: "get tripduration"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{get tripduration}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(openjourney)
+library(tidyverse)
+library(sf)
+```
+
+```{r}
+# get coordinates of some locations
+coords2 <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
+                          "Zürich Stadelhofen, Switzerland",
+                          "Uster Bahnhof, Switzerland",
+                          "Bern Hauptbahnhof, Switzerland",
+"Bahnhof Stettbach, Switzerland"),
+method ='osm')
+
+```
+
+```{r eval=FALSE, echo=TRUE}
+triptimes99b <- get_tripduration(auth="your_token",
+                                  origin=list(coords2$long[1:4],coords2$lat[1:4]),
+                                  destination=c(coords2[5,]$long,coords2[5,]$lat),
+                                  time="2021-03-13T08:34:40",
+                                  sys.sleep=5)
+                              
+```
+
+```{r eval=TRUE, echo=FALSE}
+trips <- get_tripduration(auth=token1,
+                                  origin=list(coords2$long[1:4],coords2$lat[1:4]),
+                                  destination=c(coords2[5,]$long,coords2[5,]$lat),
+                                  time="2021-03-13T08:34:40",
+                                  sys.sleep=5)
+```
+
+# Plot trips
+```{r}
+ggplot(trips, aes(trip_id, duration_min))+
+  geom_point()
+```
+
