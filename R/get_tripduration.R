@@ -16,11 +16,6 @@
 #'
 #' destination <- c(7.45,46.9)
 #'
-#' # origin <- coords %>%
-#' # select(long,lat) %>% purrr::transpose()
-#'
-#' destination <- c(7.45,46.9)
-#'
 #' get_tripduration(auth="your_token", origin=origin,destination,time, sys.sleep=2)
 #'
 
