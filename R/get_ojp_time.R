@@ -7,7 +7,7 @@
 #' @param sys.sleep delay after an API-call until the next is triggered
 #'
 #' @return tibble
-#' @export
+#' @noRd
 #'
 #' @examples
 #' coords <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
@@ -110,7 +110,7 @@ parsed_xml <- xml2::read_xml(response)
 
 # xml_find_all(xml_list , ".//siri:TripResult")
 
-trips <- xml2::xml_find_all(newlist, ".//ojp:Trip")
+trips <- xml2::xml_find_all(parsed_xml, ".//ojp:Trip")
 
 doc <- xml2::read_xml(response)
 
@@ -158,23 +158,15 @@ dataframe %>%
     #extract minutes
       trip_duration_m = as.numeric(gsub(".*?([0-9]+)M.*", "\\1", trip_duration))) %>%
     #calulate trip duration in minutes
-    mutate(duration_orig=trip_duration,
-           duration_min=ifelse(is.na(trip_duration_h),trip_duration_m,trip_duration_h*60+trip_duration_m),
+    mutate(duration_min=ifelse(is.na(trip_duration_h),trip_duration_m,trip_duration_h*60+trip_duration_m),
            #coordinates
-           origin=st_sfc(st_point(c(long_or,lat_or))),
-           destination=st_sfc(st_point(c(long_dest,lat_dest)))) %>%
+           origin=sf::st_sfc(st_point(c(long_or,lat_or))),
+           destination=sf::st_sfc(st_point(c(long_dest,lat_dest)))) %>%
            #as sf dataframe / set swiss coordinate system
-           st_as_sf() %>%
-           st_set_crs(4326)
+           sf::st_as_sf() %>%
+           sf::st_set_crs(4326)%>%
+           dplyr::select(-trip_duration_h,-trip_duration_m) %>%
+           dplyr::select(duration_min,duration_orig=trip_duration, transfers,origin,destination)
 
-
-# get duration of trip
-# tibble::tibble(
-#   origin=st_sfc(st_point(c(long_or,lat_or))),
-#   destination=st_sfc(st_point(c(long_dest,lat_dest))),
-#   duration_orig=trip_duration,
-#   duration_min=ifelse(is.na(trip_duration_h),trip_duration_m,trip_duration_h*60+trip_duration_m)) %>%
-#   st_as_sf() %>%
-#   st_set_crs(4326)
 
 }
