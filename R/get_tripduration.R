@@ -21,14 +21,23 @@
 
 get_tripduration<- function(auth=NA,
                             origin=NA,
+                            origin_id=NA,
                             destination=NA,
+                            destination_id=NA,
                             time=NA,
                             sys.sleep=NA){
 
+# check <- origin / destination length
+
+# check <- ids
+
+# allow multiple destinations
 purrr::map_dfr(1:length(origin[[1]]),
-        ~suppressWarnings(get_ojp_time(auth=auth,
+        ~suppressWarnings(get_tripduration_internal(auth=auth,
               origin=c(origin[[1]][[.]],origin[[2]][[.]]),
+              origin_id=origin_id[.],
               destination=destination,
+              destination_id=destination_id,
               time=time,
               sys.sleep=sys.sleep)
           ),

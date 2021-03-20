@@ -13,22 +13,25 @@
 #' coords <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
 #'                           "Bahnhof Stettbach, Switzerland"), method ='osm')
 #'
-#' ojp <- get_ojp_time(
+#' ojp <- get_tripduration_internal(
 #'   origin=c(coords[1,]$long,coords[1,]$lat),
-#'   destination=c(coords[2,]$long,coords[2,]$lat)
+#'   destination=c(coords[2,]$long,coords[2,]$lat),
+#'   time="2021-03-18T08:34:40"
 #' )
 #'
 
-get_ojp_time <- function(auth=NA,
+get_tripduration_internal <- function(auth=NA,
                          origin=NA,
+                         origin_id=NA,
                          destination=NA,
+                         destination_id=NA,
                          time=NA,
                          sys.sleep=NA){
 
 # add delay between requests to respect API-Rate limits
 if(!is.na(sys.sleep)) {Sys.sleep(sys.sleep)}
 
-if(is.na(auth)) {stop("Authentication token required. Please provide a token: get_ojp_time(auth='your_token',...)")}
+if(is.na(auth)) {stop("Authentication token required. Please provide a token: get_tripduration(auth='your_token',...)")}
 
 # message(paste0(origin[1]," and ", origin[2]))
 
@@ -128,7 +131,7 @@ if(all(trips_found=="true")) {
 
 # braucht es gsub?
 dataframe <- xml_find_all(doc, ".//ojp:Trip") %>%
-  map_df(function(x) {
+  purrr::map_df(function(x) {
     list(
       # get tripdurations
       trip_duration=xml2::xml_find_first(x, ".//ojp:Duration") %>%  xml2::xml_text() %>%  gsub('^"|"$', "", .),
@@ -159,14 +162,23 @@ dataframe %>%
       trip_duration_m = as.numeric(gsub(".*?([0-9]+)M.*", "\\1", trip_duration))) %>%
     #calulate trip duration in minutes
     mutate(duration_min=ifelse(is.na(trip_duration_h),trip_duration_m,trip_duration_h*60+trip_duration_m),
-           #coordinates
+           #coordinates /id of the origin
            origin=sf::st_sfc(st_point(c(long_or,lat_or))),
-           destination=sf::st_sfc(st_point(c(long_dest,lat_dest)))) %>%
+           origin_id=origin_id,
+           #coordinates of the destination
+           destination=sf::st_sfc(st_point(c(long_dest,lat_dest))),
+           destination_id=destination_id) %>%
            #as sf dataframe / set swiss coordinate system
            sf::st_as_sf() %>%
            sf::st_set_crs(4326)%>%
            dplyr::select(-trip_duration_h,-trip_duration_m) %>%
-           dplyr::select(duration_min,duration_orig=trip_duration, transfers,origin,destination)
+           dplyr::select(duration_min,
+                         duration_orig=trip_duration,
+                         transfers,
+                         origin,
+                         origin_id,
+                         destination,
+                         destination_id)
 
 
 }

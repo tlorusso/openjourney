@@ -17,23 +17,27 @@ knitr::opts_chunk$set(
 library(openjourney)
 library(tidyverse)
 library(sf)
+library(tidygeocoder)
 ```
 
 ```{r}
 # get coordinates of some locations
-coords2 <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
+coords <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
                           "Zürich Stadelhofen, Switzerland",
                           "Uster Bahnhof, Switzerland",
                           "Bern Hauptbahnhof, Switzerland",
 "Bahnhof Stettbach, Switzerland"),
 method ='osm')
 
+token1 <- paste("Bearer", "57c5dbbbf1fe4d000100001863396e06bcc5472eab6cacd76e44d91e", sep = " ")
+
+
 ```
 
 ```{r eval=FALSE, echo=TRUE}
-triptimes99b <- get_tripduration(auth="your_token",
-                                  origin=list(coords2$long[1:4],coords2$lat[1:4]),
-                                  destination=c(coords2[5,]$long,coords2[5,]$lat),
+trips <- get_tripduration(auth="your_token",
+                                  origin=list(coords$long[1:4],coords$lat[1:4]),
+                                  destination=c(coords[5,]$long,coords[5,]$lat),
                                   time="2021-03-13T08:34:40",
                                   sys.sleep=5)
                               
@@ -41,15 +45,18 @@ triptimes99b <- get_tripduration(auth="your_token",
 
 ```{r eval=TRUE, echo=FALSE}
 trips <- get_tripduration(auth=token1,
-                                  origin=list(coords2$long[1:4],coords2$lat[1:4]),
-                                  destination=c(coords2[5,]$long,coords2[5,]$lat),
-                                  time="2021-03-13T08:34:40",
+                          origin=list(coords$long[1:4],coords$lat[1:4]),
+                          origin_id = coords$address[1:4],
+                          destination=c(coords[5,]$long,coords[5,]$lat),
+                          destination_id="hello",
+                                  time="2021-03-18T08:34:40",
                                   sys.sleep=5)
 ```
 
 # Plot trips
 ```{r}
-ggplot(trips, aes(trip_id, duration_min))+
-  geom_point()
+ggplot(trips, aes(trip_id, duration_min,size=transfers))+
+  geom_point()+
+  theme_minimal()
 ```
 
