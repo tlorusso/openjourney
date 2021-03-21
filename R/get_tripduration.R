@@ -31,11 +31,13 @@ get_tripduration<- function(auth=NA,
 
 # check <- ids
 
+# cross()
+
 # allow multiple destinations
 purrr::map_dfr(1:length(origin[[1]]),
         ~suppressWarnings(get_tripduration_internal(auth=auth,
-              origin=c(origin[[1]][[.]],origin[[2]][[.]]),
-              origin_id=origin_id[.],
+              origin=origin[[.x]] %>% unlist(),
+              origin_id=origin_id[.x],
               destination=destination,
               destination_id=destination_id,
               time=time,

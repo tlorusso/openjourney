@@ -30,8 +30,6 @@ coords <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
 method ='osm')
 
 token1 <- paste("Bearer", "57c5dbbbf1fe4d000100001863396e06bcc5472eab6cacd76e44d91e", sep = " ")
-
-
 ```
 
 ```{r eval=FALSE, echo=TRUE}
@@ -44,13 +42,44 @@ trips <- get_tripduration(auth="your_token",
 ```
 
 ```{r eval=TRUE, echo=FALSE}
+#' origin <- list(c(8.572164,47.40459),
+#'                c(8.59557,47.39675))
+#'
+#' destination <- c(7.45,46.9)
+
+coords_list <- coords %>% 
+              select(long,lat) %>% 
+              purrr::transpose()
+
+# coords_list[[1]] %>% unlist()
+#
+
+# origin[[1]]
+
+
+
+
 trips <- get_tripduration(auth=token1,
-                          origin=list(coords$long[1:4],coords$lat[1:4]),
-                          origin_id = coords$address[1:4],
-                          destination=c(coords[5,]$long,coords[5,]$lat),
+                          origin=origin,
+                          origin_id = coords$address[1:5],
+                          destination=destination,
                           destination_id="hello",
                                   time="2021-03-18T08:34:40",
                                   sys.sleep=5)
+
+# coords <- list(c(47.378610,8.54000),
+#                c(47.378610,8.54000))
+
+
+coords_list <- coords %>% 
+                mutate(dest=c(lat,long))
+
+
+  select(lat,long) %>% 
+  split(seq(nrow(.)))
+
+
+cross(coords_list, "destination id")
 ```
 
 # Plot trips
