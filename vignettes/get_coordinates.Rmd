@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 library(openjourney)
 library(tidyverse)
 library(tidygeocoder)
+library(sf)
 ```
 
 
@@ -44,7 +45,7 @@ method ='osm')
 
 time <- paste0(Sys.Date(),"T08:34:40")
 
-ojp <- get_ojp_time(
+ojp <- get_ojp_time(auth=auth,
  origin=c(coords[1,]$long,coords[1,]$lat),
  destination=c(coords[2,]$long,coords[2,]$lat,
                time=time)
@@ -66,11 +67,19 @@ method ='osm')
 time <- paste0(Sys.Date(),"T08:34:40")
 
 # test mit einer Destination
-triptimes99 <- map_dfr(c(1,54,850), ~get_ojp_time(
-                               origin=c(coords[.x,]$lon,coords[.x,]$lat),
+triptimes99 <- map_dfr(c(1,54,850), ~get_ojp_time(auth=auth,
+                               origin=c(coords[.x,]$long,coords[.x,]$lat),
                                destination=c(coords2[5,]$long,coords2[5,]$lat),
                                time=time)
                               )
+
+get_tripduration(auth=token1,
+                origin=c(long_or,lat_or),
+                 destination=c(long_dest,lat_dest),
+                 time=time,
+                sys.sleep=NA)
+
+
 
 mapview::mapview(triptimes99)
 
