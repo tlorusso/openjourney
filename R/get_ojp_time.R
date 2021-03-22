@@ -154,6 +154,8 @@ dataframe <- tibble(
 #
 # } else {trip_duration <- NA}
 
+message(paste0(long_dest,lat_dest))
+
 dataframe %>%
   mutate(
     #extract hours
@@ -164,10 +166,11 @@ dataframe %>%
     mutate(duration_min=ifelse(is.na(trip_duration_h),trip_duration_m,trip_duration_h*60+trip_duration_m),
            #coordinates /id of the origin
            origin=sf::st_sfc(st_point(c(long_or,lat_or))),
-           origin_id=origin_id,
+           # origin_id=origin_id,
            #coordinates of the destination
-           destination=sf::st_sfc(st_point(c(long_dest,lat_dest))),
-           destination_id=destination_id) %>%
+           destination=sf::st_sfc(st_point(c(long_dest,lat_dest)))
+           # destination_id=destination_id
+           ) %>%
            #as sf dataframe / set swiss coordinate system
            sf::st_as_sf() %>%
            sf::st_set_crs(4326)%>%
@@ -176,9 +179,11 @@ dataframe %>%
                          duration_orig=trip_duration,
                          transfers,
                          origin,
-                         origin_id,
-                         destination,
-                         destination_id)
+                         # origin_id,
+                         destination
+                         # ,
+                         # destination_id
+                         )
 
 
 }
