@@ -27,22 +27,41 @@ get_tripduration<- function(auth=NA,
                             time=NA,
                             sys.sleep=NA){
 
-# check <- origin / destination length
+# Check and transform coordinates
 
-# check <- ids
 
-# cross()
+destination <- coordinates_to_list(destination)
+
+origin <- coordinates_to_list(origin)
+
+# create all combinations of origins / destinations
+trip_combinations = expand.grid(or = origin,
+                                de = destination)
+
+# flatten_dbl(trip_combinations$or[[1]])
 
 # allow multiple destinations
-purrr::map_dfr(1:length(origin[[1]]),
-        ~suppressWarnings(get_tripduration_internal(auth=auth,
-              origin=origin[[.x]] %>% unlist(),
-              origin_id=origin_id[.x],
-              destination=destination,
-              destination_id=destination_id,
-              time=time,
-              sys.sleep=sys.sleep)
-          ),
-        .id="trip_id")
+purrr::map_dfr(1:length(trip_combinations),
+               ~suppressWarnings(get_tripduration_internal(auth=auth,
+                                                           origin=trip_combinations$or[[.x]] %>% flatten_dbl(),
+                                                           # origin_id=origin_id[.x],
+                                                           destination=trip_combinations$de[[.x]] %>% flatten_dbl(),
+                                                           # destination_id=destination_id[.x],
+                                                           time=time,
+                                                           sys.sleep=sys.sleep)
+               ),
+               .id="trip_id")
+
+# # allow multiple destinations
+# purrr::map_dfr(1:length(origin[[1]]),
+#         ~suppressWarnings(get_tripduration_internal(auth=auth,
+#               origin=origin[[.x]] %>% unlist(),
+#               origin_id=origin_id[.x],
+#               destination=destination,
+#               destination_id=destination_id,
+#               time=time,
+#               sys.sleep=sys.sleep)
+#           ),
+#         .id="trip_id")
 
 }
