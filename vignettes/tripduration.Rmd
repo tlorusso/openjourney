@@ -1,5 +1,5 @@
 ---
-title: "get tripduration"
+title: "Get Tripduration"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{get tripduration}
@@ -35,57 +35,43 @@ token1 <- paste("Bearer", "57c5dbbbf1fe4d000100001863396e06bcc5472eab6cacd76e44d
 ```{r eval=FALSE, echo=TRUE}
 trips <- get_tripduration(auth="your_token",
                                   origin=list(coords$long[1:4],coords$lat[1:4]),
+                                  origin_id=coords$address[1:4],
                                   destination=c(coords[5,]$long,coords[5,]$lat),
+                                  destination_id=coords$address[5],
                                   time="2021-03-13T08:34:40",
                                   sys.sleep=5)
                               
 ```
 
 ```{r eval=TRUE, echo=FALSE}
-#' origin <- list(c(8.572164,47.40459),
-#'                c(8.59557,47.39675))
-#'
-#' destination <- c(7.45,46.9)
+# by hand
+# origin <- list(c(8.572164,47.40459),
+#                c(8.59557,47.39675))
+#
+# destination <- c(7.45,46.9)
 
+destination <- c(7.45,46.9)
+# or with tidygeocoder
 coords_list <- coords %>% 
               select(long,lat) %>% 
               purrr::transpose()
 
-# coords_list[[1]] %>% unlist()
-#
-
-# origin[[1]]
-
-
-
-
 trips <- get_tripduration(auth=token1,
-                          origin=origin,
-                          origin_id = coords$address[1:5],
+                          origin=coords_list ,
+                          # origin_id = coords$address[1:4],
                           destination=destination,
-                          destination_id="hello",
+                          # destination_id=coords$address[5],
                                   time="2021-03-18T08:34:40",
                                   sys.sleep=5)
-
-# coords <- list(c(47.378610,8.54000),
-#                c(47.378610,8.54000))
-
-
-coords_list <- coords %>% 
-                mutate(dest=c(lat,long))
-
-
-  select(lat,long) %>% 
-  split(seq(nrow(.)))
-
-
-cross(coords_list, "destination id")
+# %>% 
+#   select(-destination) %>% 
+#   plot()
 ```
-
 # Plot trips
 ```{r}
-ggplot(trips, aes(trip_id, duration_min,size=transfers))+
-  geom_point()+
-  theme_minimal()
+ggplot(trips, aes(duration_min,trip_id,size=transfers, fill=transfers))+
+  geom_col(position="dodge")+
+  theme_minimal()+
+  scale_fill_viridis_d()
 ```
 

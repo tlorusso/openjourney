@@ -27,8 +27,7 @@ get_tripduration<- function(auth=NA,
                             time=NA,
                             sys.sleep=NA){
 
-# Check and transform coordinates
-
+# Transform coordinates
 
 destination <- coordinates_to_list(destination)
 
@@ -38,30 +37,24 @@ origin <- coordinates_to_list(origin)
 trip_combinations = expand.grid(or = origin,
                                 de = destination)
 
-# flatten_dbl(trip_combinations$or[[1]])
+# location_id <- expand.grid(origin_id, destination_id)
 
-# allow multiple destinations
-purrr::map_dfr(1:length(trip_combinations),
+df <- purrr::map_dfr(1:length(trip_combinations),
                ~suppressWarnings(get_tripduration_internal(auth=auth,
                                                            origin=trip_combinations$or[[.x]] %>% flatten_dbl(),
-                                                           # origin_id=origin_id[.x],
+                                                           # origin_id=location_id$Var1[[.x]],
                                                            destination=trip_combinations$de[[.x]] %>% flatten_dbl(),
-                                                           # destination_id=destination_id[.x],
+                                                           # destination_id=location_id$Var2[[.x]],
                                                            time=time,
                                                            sys.sleep=sys.sleep)
                ),
                .id="trip_id")
 
-# # allow multiple destinations
-# purrr::map_dfr(1:length(origin[[1]]),
-#         ~suppressWarnings(get_tripduration_internal(auth=auth,
-#               origin=origin[[.x]] %>% unlist(),
-#               origin_id=origin_id[.x],
-#               destination=destination,
-#               destination_id=destination_id,
-#               time=time,
-#               sys.sleep=sys.sleep)
-#           ),
-#         .id="trip_id")
+df %>%
+  mutate_at(vars(origin, destination),
+            ~st_as_sfc(.) %>%
+              sf::st_set_crs(4326)
+            ) %>%
+          st_as_sf()
 
 }

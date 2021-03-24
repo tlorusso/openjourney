@@ -22,9 +22,9 @@
 
 get_tripduration_internal <- function(auth=NA,
                          origin=NA,
-                         origin_id=NA,
+                         origin_id=origin_id,
                          destination=NA,
-                         destination_id=NA,
+                         destination_id=destination_id,
                          time=NA,
                          sys.sleep=NA){
 
@@ -163,17 +163,16 @@ dataframe %>%
     #extract minutes
       trip_duration_m = as.numeric(gsub(".*?([0-9]+)M.*", "\\1", trip_duration))) %>%
     #calulate trip duration in minutes
-    mutate(duration_min=ifelse(is.na(trip_duration_h),trip_duration_m,trip_duration_h*60+trip_duration_m),
+      dplyr::mutate(duration_min=ifelse(is.na(trip_duration_h),trip_duration_m,trip_duration_h*60+trip_duration_m),
            #coordinates /id of the origin
-           origin=sf::st_sfc(st_point(c(long_or,lat_or))),
+           origin=list(st_point(c(long_or,lat_or))),
            # origin_id=origin_id,
            #coordinates of the destination
-           destination=sf::st_sfc(st_point(c(long_dest,lat_dest)))
+           destination=list(st_point(c(long_dest,lat_dest)))) %>%
            # destination_id=destination_id
-           ) %>%
-           #as sf dataframe / set swiss coordinate system
-           sf::st_as_sf() %>%
-           sf::st_set_crs(4326)%>%
+#            #as sf dataframe / set swiss coordinate system
+#            sf::st_as_sf() %>%
+#            sf::st_set_crs(4326)%>%
            dplyr::select(-trip_duration_h,-trip_duration_m) %>%
            dplyr::select(duration_min,
                          duration_orig=trip_duration,
