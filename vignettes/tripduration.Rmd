@@ -64,25 +64,23 @@ trips2 <- get_tripduration(auth=token1,
                           time="2021-03-27T08:34:40",
                           sys.sleep=5)
 
-trips2 <- get_tripduration(auth=token1,
+trips <- get_tripduration(auth=token1,
                           origin=coords_list[c(1:4)],
                           origin_id = coords$address[c(1:4)],
                           destination=destinations,
                           destination_id=coords$address[5],
                           time="2021-03-27T08:34:40",
                           sys.sleep=5)
-
-tripcomb <- expand.grid(origins,destinations)
-
-# Error: '{ "error": "Access to this API has been disallowed" }'
-# %>% 
-#   select(-destination) %>% 
-#   plot()
 ```
 # Plot trips
+
+Mit geom linerange ab 0 
 ```{r}
-ggplot(trips, aes(duration_min,trip_id,size=transfers, fill=transfers))+
-  geom_col(position="dodge")+
+ggplot(trips, aes(duration_min,
+                  paste0(origin_id, "\n - ", destination_id),
+                  size=transfers, 
+                  fill=transfers))+
+  geom_point()+
   theme_minimal()+
   scale_fill_viridis_d()
 ```
