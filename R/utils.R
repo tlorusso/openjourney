@@ -37,3 +37,23 @@ check_coordinates <- function(x){
   if(length(x!=2)){stop("Origin / destination is not a numeric vector or list of length two (long / lat)")}
 
 }
+
+#
+#' Generate vector of NAs to fill in the id-variables with length equal to a coordinate vector
+#'
+#' @return
+#' @export
+#' @noRd
+#'
+
+na_vec <- function(coord_var, name_var){
+
+if(!length(coord_var)==length(name_var)){
+
+message("length of origin OR destination - coordinate vector does not match with the id vector. Ids are set to NA." )
+
+      rep(NA, length(coord_var))
+
+} else {name_var}
+
+}

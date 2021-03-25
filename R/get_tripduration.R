@@ -40,18 +40,18 @@ trip_combinations = expand.grid(or = origin,
 location_id <- expand.grid(origin_id, destination_id)
 
 # Check if length of label vector corresponds with coordinate vector
+
+or_id <- na_vec(trip_combinations$or, location_id$Var1)
 #
-# or_id <- na_vec(trip_combinations$or, location_id)
-#
-# de_id <- na_vec(trip_combinations$de, location_id)
+de_id <- na_vec(trip_combinations$de, location_id$Var2)
 
 
 df <- purrr::map_dfr(1:length(trip_combinations$or),
                ~suppressWarnings(get_tripduration_internal(auth=auth,
                                                            origin=trip_combinations$or[[.x]] %>% purrr::flatten_dbl(),
-                                                           origin_id=location_id$Var1[[.x]],
+                                                           origin_id=or_id[.x],
                                                            destination=trip_combinations$de[[.x]] %>% purrr::flatten_dbl(),
-                                                           destination_id=location_id$Var2[[.x]],
+                                                           destination_id=de_id[.x],
                                                            time=time,
                                                            sys.sleep=sys.sleep)
                ),
