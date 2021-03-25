@@ -34,7 +34,8 @@ lat_or <- 47.34
 long_dest <- 7.45
 lat_dest <- 46.9
 
-token1 <- paste("Bearer", "57c5dbbbf1fe4d000100001863396e06bcc5472eab6cacd76e44d91e", sep = " ")
+
+token1 <- paste("Bearer", "57c5dbbbf1fe4d000100001842c323fa9ff44fbba0b9b925f0c052d1", sep = " ")
 
 ```
 

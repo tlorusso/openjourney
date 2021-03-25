@@ -18,6 +18,9 @@ library(openjourney)
 library(tidyverse)
 library(sf)
 library(tidygeocoder)
+
+# TODO<
+#   add time to results dataframe
 ```
 
 ```{r}
@@ -29,15 +32,15 @@ coords <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
 "Bahnhof Stettbach, Switzerland"),
 method ='osm')
 
-token1 <- paste("Bearer", "57c5dbbbf1fe4d000100001863396e06bcc5472eab6cacd76e44d91e", sep = " ")
+token1 <- paste("Bearer", "57c5dbbbf1fe4d000100001842c323fa9ff44fbba0b9b925f0c052d1", sep = " ")
 ```
 
 ```{r eval=FALSE, echo=TRUE}
 trips <- get_tripduration(auth="your_token",
                                   origin=list(coords$long[1:4],coords$lat[1:4]),
-                                  origin_id=coords$address[1:4],
+                                  # origin_id=coords$address[1:4],
                                   destination=c(coords[5,]$long,coords[5,]$lat),
-                                  destination_id=coords$address[5],
+                                  # destination_id=coords$address[5],
                                   time="2021-03-13T08:34:40",
                                   sys.sleep=5)
                               
@@ -53,16 +56,21 @@ trips <- get_tripduration(auth="your_token",
 destination <- c(7.45,46.9)
 # or with tidygeocoder
 coords_list <- coords %>% 
-              select(long,lat) %>% 
-              purrr::transpose()
+                select(long,lat) %>% 
+                purrr::transpose()
+
+
+# token1 <- "Bearer 57c5dbbbf1fe4d0001000018c73945187db94eb1a26eff483259d2b4"
 
 trips <- get_tripduration(auth=token1,
-                          origin=coords_list ,
+                          origin=coords_list,
                           # origin_id = coords$address[1:4],
                           destination=destination,
                           # destination_id=coords$address[5],
-                                  time="2021-03-18T08:34:40",
-                                  sys.sleep=5)
+                          time="2021-03-23T08:34:40",
+                          sys.sleep=5)
+
+# Error: '{ "error": "Access to this API has been disallowed" }'
 # %>% 
 #   select(-destination) %>% 
 #   plot()

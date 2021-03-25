@@ -41,9 +41,9 @@ trip_combinations = expand.grid(or = origin,
 
 df <- purrr::map_dfr(1:length(trip_combinations),
                ~suppressWarnings(get_tripduration_internal(auth=auth,
-                                                           origin=trip_combinations$or[[.x]] %>% flatten_dbl(),
+                                                           origin=trip_combinations$or[[.x]] %>% purrr::flatten_dbl(),
                                                            # origin_id=location_id$Var1[[.x]],
-                                                           destination=trip_combinations$de[[.x]] %>% flatten_dbl(),
+                                                           destination=trip_combinations$de[[.x]] %>% purrr::flatten_dbl(),
                                                            # destination_id=location_id$Var2[[.x]],
                                                            time=time,
                                                            sys.sleep=sys.sleep)
@@ -52,8 +52,7 @@ df <- purrr::map_dfr(1:length(trip_combinations),
 
 df %>%
   mutate_at(vars(origin, destination),
-            ~st_as_sfc(.) %>%
-              sf::st_set_crs(4326)
+            ~st_as_sfc(.) %>% sf::st_set_crs(4326)
             ) %>%
           st_as_sf()
 

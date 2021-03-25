@@ -22,16 +22,16 @@
 
 get_tripduration_internal <- function(auth=NA,
                          origin=NA,
-                         origin_id=origin_id,
+                         # origin_id=origin_id,
                          destination=NA,
-                         destination_id=destination_id,
+                         # destination_id=destination_id,
                          time=NA,
                          sys.sleep=NA){
 
 # add delay between requests to respect API-Rate limits
 if(!is.na(sys.sleep)) {Sys.sleep(sys.sleep)}
 
-if(is.na(auth)) {stop("Authentication token required. Please provide a token: get_tripduration(auth='your_token',...)")}
+# if(is.na(auth)) {stop("Authentication token required. Please provide a token: get_tripduration(auth='your_token',...)")}
 
 # message(paste0(origin[1]," and ", origin[2]))
 
@@ -94,7 +94,7 @@ body  <- glue::glue('<?xml version="1.0" encoding="utf-8"?>
 
 
 post <- httr::POST(url="https://api.opentransportdata.swiss/ojp2020",
-                  add_headers(Authorization=auth),
+                  httr::add_headers(Authorization=auth),
                   httr::content_type_xml(),
                   body=body)
 
