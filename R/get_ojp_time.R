@@ -22,9 +22,9 @@
 
 get_tripduration_internal <- function(auth=NA,
                          origin=NA,
-                         # origin_id=origin_id,
+                         origin_id=origin_id,
                          destination=NA,
-                         # destination_id=destination_id,
+                         destination_id=destination_id,
                          time=NA,
                          sys.sleep=NA){
 
@@ -148,11 +148,6 @@ dataframe <- tibble(
   )
 }
 
-# if(xml_data2$OJPResponse$ServiceDelivery$OJPTripDelivery$Status=="true"){
-#
-#   trip_duration <- xml_data2$OJPResponse$ServiceDelivery$OJPTripDelivery$TripResult$Trip$Duration
-#
-# } else {trip_duration <- NA}
 
 message(paste0(long_dest,lat_dest))
 
@@ -167,10 +162,10 @@ dataframe %>%
       dplyr::mutate(duration_min=ifelse(is.na(trip_duration_h),trip_duration_m,trip_duration_h*60+trip_duration_m),
            #coordinates /id of the origin
            origin=list(st_point(c(long_or,lat_or))),
-           # origin_id=origin_id,
+           origin_id=origin_id,
            #coordinates of the destination
-           destination=list(st_point(c(long_dest,lat_dest)))) %>%
-           # destination_id=destination_id
+           destination=list(st_point(c(long_dest,lat_dest))),
+           destination_id=destination_id) %>%
 #            #as sf dataframe / set swiss coordinate system
 #            sf::st_as_sf() %>%
 #            sf::st_set_crs(4326)%>%
@@ -180,10 +175,10 @@ dataframe %>%
                          duration_orig=trip_duration,
                          transfers,
                          origin,
-                         # origin_id,
+                         origin_id,
                          destination
-                         # ,
-                         # destination_id
+                         ,
+                         destination_id
                          )
 
 

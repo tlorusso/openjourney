@@ -36,13 +36,6 @@ token1 <- paste("Bearer", "57c5dbbbf1fe4d000100001842c323fa9ff44fbba0b9b925f0c05
 ```
 
 ```{r eval=FALSE, echo=TRUE}
-trips <- get_tripduration(auth="your_token",
-                                  origin=list(coords$long[1:4],coords$lat[1:4]),
-                                  # origin_id=coords$address[1:4],
-                                  destination=c(coords[5,]$long,coords[5,]$lat),
-                                  # destination_id=coords$address[5],
-                                  time="2021-03-13T08:34:40",
-                                  sys.sleep=5)
                               
 ```
 
@@ -53,19 +46,33 @@ trips <- get_tripduration(auth="your_token",
 #
 # destination <- c(7.45,46.9)
 
-destination <- c(7.45,46.9)
+# destination <- c(7.45,46.9)
 # or with tidygeocoder
 coords_list <- coords %>% 
                 select(long,lat) %>% 
                 purrr::transpose()
 
-trips <- get_tripduration(auth=token1,
-                          origin=coords_list,
-                          # origin_id = coords$address[1:4],
-                          destination=destination,
-                          # destination_id=coords$address[5],
-                          time="2021-03-23T08:34:40",
+origins <- coords_list[c(1:4)]
+
+destinations <- coords_list[c(5)]
+
+trips2 <- get_tripduration(auth=token1,
+                          origin=origins,
+                          origin_id = coords$address[1:4],
+                          destination=destinations,
+                          destination_id=coords$address[5],
+                          time="2021-03-27T08:34:40",
                           sys.sleep=5)
+
+trips2 <- get_tripduration(auth=token1,
+                          origin=coords_list[c(1:4)],
+                          origin_id = coords$address[c(1:4)],
+                          destination=destinations,
+                          destination_id=coords$address[5],
+                          time="2021-03-27T08:34:40",
+                          sys.sleep=5)
+
+tripcomb <- expand.grid(origins,destinations)
 
 # Error: '{ "error": "Access to this API has been disallowed" }'
 # %>% 
