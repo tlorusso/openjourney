@@ -59,9 +59,6 @@ coords_list <- coords %>%
                 select(long,lat) %>% 
                 purrr::transpose()
 
-
-# token1 <- "Bearer 57c5dbbbf1fe4d0001000018c73945187db94eb1a26eff483259d2b4"
-
 trips <- get_tripduration(auth=token1,
                           origin=coords_list,
                           # origin_id = coords$address[1:4],

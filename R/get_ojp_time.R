@@ -158,6 +158,7 @@ message(paste0(long_dest,lat_dest))
 
 dataframe %>%
   mutate(
+      time=time,
     #extract hours
       trip_duration_h = as.numeric(gsub(".*?([0-9]+)H.*", "\\1", trip_duration)),
     #extract minutes
@@ -174,7 +175,8 @@ dataframe %>%
 #            sf::st_as_sf() %>%
 #            sf::st_set_crs(4326)%>%
            dplyr::select(-trip_duration_h,-trip_duration_m) %>%
-           dplyr::select(duration_min,
+           dplyr::select(time,
+                         duration_min,
                          duration_orig=trip_duration,
                          transfers,
                          origin,
