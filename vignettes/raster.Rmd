@@ -23,7 +23,7 @@ library(raster)
 
 How long until Zurich Central Station? We can generate a raster of the canton of zurich to get p
 
-```{r}
+```{r eval=FALSE}
 # get shapefile of Switzerland and filter the canton of Zurich
 shp <- getData(country='CH', level=1) %>%
         sf::st_as_sf() %>%
@@ -79,13 +79,13 @@ triptimes99b <- get_tripduration(auth=token1,
 
 # saveRDS(triptimes99b,"trips.RDS")
 
-trips <- readRDS("~/repos/openjourney/vignettes/trips.RDS")
+# trips <- readRDS("~/repos/openjourney/vignettes/trips.RDS")
                 
 
 ```
 
 
-```{r}
+```{r eval=FALSE}
 ggplot(trips,aes(color=duration_min))+
   geom_sf()+
   scale_fill_viridis_c()+
@@ -96,6 +96,3 @@ mapview::mapview(triptimes99b,zcol = "duration_min")
 
 ```
 # Wieso NAs für gewisse Koordinaten?
-# OK R Package?
-# Punkte zu beachten?
-# Gehzeit falls keine Verbindung?

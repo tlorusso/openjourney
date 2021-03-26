@@ -31,8 +31,9 @@ get_tripduration_internal <- function(auth=NA,
 # add delay between requests to respect API-Rate limits
 if(!is.na(sys.sleep)) {Sys.sleep(sys.sleep)}
 
-# if(is.na(auth)) {stop("Authentication token required. Please provide a token: get_tripduration(auth='your_token',...)")}
+if(is.na(auth)) {stop("Authentication token required. Please provide a token: get_tripduration(auth='your_token',...)")}
 
+if(is.na(auth)) {stop("Authentication token required. Please provide a token: get_tripduration(auth='your_token',...)")}
 # message(paste0(origin[1]," and ", origin[2]))
 
 # add checks for coordinates etc.
@@ -101,7 +102,9 @@ post <- httr::POST(url="https://api.opentransportdata.swiss/ojp2020",
 # extract response
 response <- suppressMessages(httr::content(post,as="text"))
 
-# Error message if rate limit is exceeded
+# Error message if rate limit is exceeded or token is incorrect
+if(grepl("Rate limit exceeded", response)) stop("Rate limit exceeded")
+
 if(grepl("Rate limit exceeded", response)) stop("Rate limit exceeded")
 
 # version with xml2
@@ -149,7 +152,7 @@ dataframe <- tibble(
 }
 
 
-message(paste0(long_dest,lat_dest))
+# message(paste0(long_dest,lat_dest))
 
 dataframe %>%
   mutate(

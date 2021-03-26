@@ -56,20 +56,14 @@ origins <- coords_list[c(1:4)]
 
 destinations <- coords_list[c(5)]
 
-trips2 <- get_tripduration(auth=token1,
+dep_time <-paste0(Sys.Date(),"T08:34:40")
+
+trips <- get_tripduration(auth=token1,
                           origin=origins,
                           origin_id = coords$address[1:4],
                           destination=destinations,
                           destination_id=coords$address[5],
-                          time="2021-03-27T08:34:40",
-                          sys.sleep=5)
-
-trips <- get_tripduration(auth=token1,
-                          origin=coords_list[c(1:4)],
-                          origin_id = coords$address[c(1:4)],
-                          destination=destinations,
-                          destination_id=coords$address[5],
-                          time="2021-03-27T08:34:40",
+                          time=dep_time,
                           sys.sleep=5)
 ```
 # Plot trips

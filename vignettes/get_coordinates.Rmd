@@ -39,7 +39,7 @@ token1 <- paste("Bearer", "57c5dbbbf1fe4d000100001842c323fa9ff44fbba0b9b925f0c05
 
 ```
 
-```{r}
+```{r eval=FALSE}
 coords <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
 "Bahnhof Stettbach, Switzerland"),
 method ='osm')
@@ -55,7 +55,7 @@ ojp <- get_ojp_time(auth=auth,
 response
 ```
 
-```{r}
+```{r eval=FALSE}
 library(tidygeocoder)
 
 coords2 <- geo(address = c("Zürich Schwamendingerplatz, Switzerland",
