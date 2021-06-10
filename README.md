@@ -1,4 +1,7 @@
 # openjourney
 
-An R package to query trip times via opentransportdata.c..
+The package allows to calculate traveltimes by public transport within Switzerland between two coordinates.
+It wraps the ojp API of opentransportdata.swiss.
+
+
 
