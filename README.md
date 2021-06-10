@@ -1,5 +1,5 @@
 
-<p>i ♥ <i class="fa fa-coffee"></i></p>
+<p> <i class="fa fa-coffee"></i></p>
 
 # openjourney
 
