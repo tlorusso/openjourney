@@ -6,10 +6,11 @@ Author: Thomas Lo Russo <th.lorusso@gmail.com>
 Maintainer: Thomas Lo Russo <th.lorusso@gmail.com>
 Description: The package allows to calculate traveltimes by public transport within Switzerland between two coordinates.
     It wraps the ojp API of opentransportdata.swiss.
-License: GPL2
+License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
-Imports: sf,
+Imports: 
+    sf,
     httr,
     dplyr,
     xml2
@@ -19,3 +20,4 @@ Suggests:
     testthat
 VignetteBuilder: knitr
 RoxygenNote: 7.1.1
+RdMacros: lifecycle
