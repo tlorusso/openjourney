@@ -1,16 +1,29 @@
 ---
-title: "Get Tripduration"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{get tripduration}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: github_document
 ---
+
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
 )
+```
+
+# openjourney
+
+![](https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg)
+
+The openjourney package allows to query trip durations between two cooordinates within Switzerland. It wraps the [Open Journey Planer API](https://opentransportdata.swiss/de/cookbook/open-journey-planner-ojp/) provided by opentransportdata.swiss.
+
+## Installation
+
+You can install the the development version from [GitHub](https://github.com/) with:
+
+```{r eval=FALSE}
+# install.packages("devtools")
+devtools::install_github("tlorusso/openjourney")
 ```
 
 ```{r setup}
@@ -20,8 +33,6 @@ library(sf)
 library(tidygeocoder)
 library(xml2)
 ```
-
-The openjourney package allows to query trip durations between two cooordinates within Switzerland. It wraps the [Open Journey Planer API](https://opentransportdata.swiss/de/cookbook/open-journey-planner-ojp/) provided by opentransportdata.swiss.
 
 # Usage
 
