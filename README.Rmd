@@ -39,7 +39,7 @@ library(xml2)
 ## API-Token
 To be able to query the API a token is needed. A public key is available in the [documentation](https://opentransportdata.swiss/de/cookbook/open-journey-planner-ojp/#Einleitung) which can be used for a limited number of queries. Private keys with higher rate limits can be created on opentransportdata.swiss.
 
-In our example we'll use the public key:
+In our example we'll use the public key.
 ```{r}
 token1 <- paste("Bearer", "57c5dbbbf1fe4d000100001842c323fa9ff44fbba0b9b925f0c052d1", sep = " ")
 ```
