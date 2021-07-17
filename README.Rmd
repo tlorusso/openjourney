@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 
 ![](https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg)
 
-The openjourney package allows to query trip durations between two cooordinates within Switzerland. It wraps the [Open Journey Planer API](https://opentransportdata.swiss/de/cookbook/open-journey-planner-ojp/) provided by opentransportdata.swiss.
+The openjourney package allows to query trip durations between cooordinates within Switzerland. It wraps the [Open Journey Planer API](https://opentransportdata.swiss/de/cookbook/open-journey-planner-ojp/) provided by opentransportdata.swiss.
 
 ## Installation
 

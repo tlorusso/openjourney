@@ -3,7 +3,7 @@
 
 ![](https://lifecycle.r-lib.org/articles/figures/lifecycle-experimental.svg)
 
-The openjourney package allows to query trip durations between two
+The openjourney package allows to query trip durations between
 cooordinates within Switzerland. It wraps the [Open Journey Planer
 API](https://opentransportdata.swiss/de/cookbook/open-journey-planner-ojp/)
 provided by opentransportdata.swiss.
