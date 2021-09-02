@@ -6,7 +6,9 @@
 The openjourney package allows to query trip durations between
 cooordinates within Switzerland. It wraps the [Open Journey Planer
 API](https://opentransportdata.swiss/de/cookbook/open-journey-planner-ojp/)
-provided by opentransportdata.swiss.
+provided by opentransportdata.swiss. It allows to query trip times
+between multiple locations in a structured manner and use them for data
+analysis.
 
 ## Installation
 
@@ -74,10 +76,10 @@ ggplot(trips, aes(duration_min,
   geom_point()+
   theme_minimal()+
   scale_fill_viridis_c()+
-  labs(y="")+
+  labs(y="", x="Trip duration (minutes)")+
   scale_x_continuous(limits=c(0,100))
 #> Warning: Using size for a discrete variable is not advised.
-#> Warning: Removed 3 rows containing missing values (geom_point).
+#> Warning: Removed 1 rows containing missing values (geom_point).
 ```
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
